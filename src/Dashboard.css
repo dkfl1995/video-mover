@@ -1,0 +1,18 @@
+.drag-content-box{
+    position: relative;
+    width: 80%;
+    height: 80vh;
+    min-width: fit-content;
+    margin: 0 auto;
+    background-color: blue
+}
+
+.drag-content{
+    position: absolute;
+    cursor: pointer;
+}
+
+video{
+    margin: 0;
+    cursor: pointer;
+}

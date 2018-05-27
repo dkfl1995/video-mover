@@ -1,0 +1,24 @@
+
+
+.button{
+  padding: 10px;
+  background-color: rgba(63, 81, 181, 0.9);
+  display: inline-block;
+  border-radius: 3px;
+  color: wheat;
+  transition: 0.5s color, 0.5s background-color ease-in; 
+  box-shadow: 0;
+}
+
+.button:hover{
+  color: rgb(252, 255, 84);
+  background-color: rgb(40, 62, 183);
+  box-shadow: 0 10 10 10 rgb(40, 62, 183)
+}
+  
+.content-button{
+  display: inline-block;
+  border-radius: 3px;
+  border: 0;
+  font-size: 1rem
+}
