@@ -8,7 +8,7 @@ class Main extends Component {
   constructor(props){
     super(props);
     this.state = {
-      url: String,
+      url: '',
       isSubmitted: false
     };
     this.validateUrl = this.validateUrl.bind(this);
@@ -18,11 +18,11 @@ class Main extends Component {
   }
   validateUrl(e){
     e.preventDefault();
-    console.log(this.state.url);
     let url = this.state.url;
-    if (url.match(/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/)){
+    if (url && url.length > 2 && url.match(/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/)){
+      console.log(url);
       this.setState({isSubmitted: true});
-    }else{
+    }else if(!url || url === null || url === undefined){
       this.setState({isSubmitted: false});
     }
   }
