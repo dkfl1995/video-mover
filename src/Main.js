@@ -22,7 +22,7 @@ class Main extends Component {
     e.preventDefault();
     let url = this.state.url;
     if (url && url.length > 2 && url.match(/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/)){
-      if(url.match(/.(jpg?|jpeg?)$/)){
+      if(url.match(/.(jpg?|jpeg?|png?)$/)){
         console.log("its picture");
         this.setState({
           isSubmitted: true,

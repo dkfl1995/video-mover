@@ -62,17 +62,7 @@ class Dashboard extends React.Component{
         element.addEventListener('mousedown', this.resizeStop);
     }
     resizeElem(event){
-        // let offsetX, offsetY, wrapperRect, elementRect, wrapper;
-        // wrapper = this.refs.content;
-
-        // offsetX = event.clientX - (wrapper.offsetLeft + handle.offsetLeft);
-        // offsetY = event.clientY - (wrapper.offsetTop + handle.offsetTop);
-        // wrapperRect = getElementRect(wrapper);
-        // elementRect = getElementRect(element);
-        // wrapper.style.width = (wrapperRect.width + offsetX) + 'px';
-        // wrapper.style.height = (wrapperRect.height + offsetY) + 'px';
-        // element.style.width = (elementRect.width + offsetX) + 'px';
-        // element.style.height = (elementRect.height + offsetY) + 'px';
+        
     }
     onMouseDown(e){
         e.preventDefault();
@@ -167,14 +157,15 @@ class Dashboard extends React.Component{
                         this.state.videoUrl ?
                             <video
                             className="drag-content" 
-                            onMouseDown={e => this.onMouseDown(e)}
                             ref="dragContent"
                             style={{
                                 left : this.state.x,
                                 top : this.state.y
                             }}
                             loop controls >
-                                <source src={this.state.videoUrl} type="video/mp4" />
+                                <source
+                                onMouseDown={e => this.onMouseDown(e)}
+                                src={this.state.videoUrl} type="video/mp4" />
                                 {message}
                             </video>
                         : this.state.picUrl ?
