@@ -10,9 +10,24 @@
 .drag-content{
     position: absolute;
     cursor: pointer;
+    max-width: 70vmin;
+    width: auto;
+    border: 2px solid yellow;
+    height: 50%;
+    overflow: hidden;
+    z-index: 1
 }
 
-video{
+img{
+    cursor: context-menu;
+    position: relative;
+    z-index: 5;
+    width: auto;
+    height: 100%;
+}
+
+video, video>source{ 
     margin: 0;
     cursor: pointer;
+    border: 2px solid yellow;
 }

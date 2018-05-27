@@ -1,7 +1,4 @@
-'use strict';
-
 import React from 'react';
-import {withRouter, Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import './Dashboard.css';
@@ -10,8 +7,8 @@ class Dashboard extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            url: this.props.contentUrl, //'http://clips.vorwaerts-gmbh.de/VfE_html5.mp4',
-            videoPos: [Number,Number], 
+            videoUrl: this.props.videoUrl,
+            picUrl: this.props.picUrl, //'http://clips.vorwaerts-gmbh.de/VfE_html5.mp4',
             shiftX: Number,
             shiftY: Number,
             parentOffsetX: Number,
@@ -19,6 +16,7 @@ class Dashboard extends React.Component{
             x: Number,
             y: Number
         };
+        this.initResize = this.initResize.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
@@ -26,23 +24,27 @@ class Dashboard extends React.Component{
         this.sendRes = this.sendRes.bind(this);
     }
     componentDidMount(){
-        window.addEventListener('beforeunload', this.sendRes)
+        // window.addEventListener('beforeunload', this.sendRes);
     }
     componentWillUnmount(){
-        this.sendRes();
-        window.removeEventListener('beforeunload', this.sendRes);
+        // this.sendRes();
+        // window.removeEventListener('beforeunload', this.sendRes);
     }
     sendRes(){
-        console.log('fetching')
+        let link;
+        if(this.props.videoUrl){ 
+            link = this.state.videoUrl; 
+        }else if(this.props.picUrl){
+            link = this.state.picUrl;
+        }
         fetch('http://localhost:3001',{
+            mode: "no-cors",
             method: "POST",
             body: JSON.stringify({
-                url: this.state.url,
+                url: link,
                 posX: this.state.x,
                 posY: this.state.y
             })
-        }).then((res) =>  {
-            console.log(res);
         }).catch((err) => {
             console.log(err);
         });
@@ -53,6 +55,24 @@ class Dashboard extends React.Component{
                 left: box.left + window.pageXOffset,
                 top: box.top + window.pageYOffset
             };
+    }
+    initResize(e){
+        let element = this.refs.content;
+        element.addEventListener('mousemove', this.resizeElem);
+        element.addEventListener('mousedown', this.resizeStop);
+    }
+    resizeElem(event){
+        // let offsetX, offsetY, wrapperRect, elementRect, wrapper;
+        // wrapper = this.refs.content;
+
+        // offsetX = event.clientX - (wrapper.offsetLeft + handle.offsetLeft);
+        // offsetY = event.clientY - (wrapper.offsetTop + handle.offsetTop);
+        // wrapperRect = getElementRect(wrapper);
+        // elementRect = getElementRect(element);
+        // wrapper.style.width = (wrapperRect.width + offsetX) + 'px';
+        // wrapper.style.height = (wrapperRect.height + offsetY) + 'px';
+        // element.style.width = (elementRect.width + offsetX) + 'px';
+        // element.style.height = (elementRect.height + offsetY) + 'px';
     }
     onMouseDown(e){
         e.preventDefault();
@@ -70,23 +90,39 @@ class Dashboard extends React.Component{
     }
     onMove(e) {
         e.preventDefault();
+        e.stopPropagation();
         let element = this.refs.dragContent;
         let parent = this.refs.dragContentBox;
 
         let parentBox = parent.getBoundingClientRect();
         let elementBox = element.getBoundingClientRect();
 
-        let newElementPosX = e.clientX - this.state.shiftX - parent.offsetLeft;
-        let newElementPosY = e.clientY - this.state.shiftY - parent.offsetTop;
+        let newElementPosX = Math.round(e.clientX) - Math.round(this.state.shiftX) - parent.offsetLeft;
+        let newElementPosY = Math.round(e.clientY) - Math.round(this.state.shiftY) - parent.offsetTop;
 
-        if(newElementPosX < 0){
+        if(newElementPosX < 0 && newElementPosY < 0){
             this.setState({
                 x: 0,
-                y: newElementPosY
+                y: 0
             });
-        }else if(newElementPosX + Math.round(elementBox.width) >= Math.round(parentBox.width)){
+        }else if(newElementPosX + elementBox.width > parentBox.width && newElementPosY < 0){
             this.setState({
                 x: parentBox.width - elementBox.width,
+                y: 0
+            });
+        }else if(newElementPosX + elementBox.width > parentBox.width && newElementPosY + elementBox.height > parentBox.height){
+            this.setState({
+                x: parentBox.width - elementBox.width,
+                y: parentBox.height - elementBox.height
+            });
+        }else if(newElementPosX < 0 && newElementPosY + elementBox.height > parentBox.height){
+            this.setState({
+                x: 0,
+                y: parentBox.height - elementBox.height
+            });
+        }else if(newElementPosX < 0){
+            this.setState({
+                x: 0,
                 y: newElementPosY
             });
         }else if(newElementPosY < 0){
@@ -94,26 +130,14 @@ class Dashboard extends React.Component{
                 x: newElementPosX,
                 y: 0
             });
-            element.style.top = 0;
-        }else if(newElementPosY + Math.round(elementBox.height) >= Math.round(parentBox.height)){
+        }else if(newElementPosX + elementBox.width > parentBox.width){
+            this.setState({
+                x: parentBox.width - elementBox.width,
+                y: newElementPosY
+            });
+        }else if(newElementPosY + elementBox.height > parentBox.height){
             this.setState({
                 x: newElementPosX,
-                y: parentBox.height - elementBox.height
-            });
-        }else if(newElementPosX < 0 && newElementPosY < 0){
-            console.log("dbout")
-            this.setState({
-                x: 0,
-                y: 0
-            });
-        }else if(newElementPosY < 0 && newElementPosX + elementBox.width >= Math.round(parentBox.width)){
-            this.setState({
-                x: parentBox.width - elementBox.width,
-                y: 0
-            });
-        }else if(newElementPosX + Math.round(elementBox.width) >= Math.round(parentBox.width) && newElementPosY + Math.round(elementBox.height) >= Math.round(parentBox.height)){
-            this.setState({
-                x: parentBox.width - elementBox.width,
                 y: parentBox.height - elementBox.height
             });
         }else{
@@ -135,23 +159,45 @@ class Dashboard extends React.Component{
         
     }
     render(){
-        let message = "Browser does not support any video type except MP4";
-
+        let message = "Browser does not support any video/image type";
         return (
             <div>
                 <div className="drag-content-box" ref="dragContentBox">
-                    <video
-                    className="drag-content" 
-                    onMouseDown={e => this.onMouseDown(e)}
-                    ref="dragContent"
-                    style={{
-                        left : this.state.x,
-                        top : this.state.y
-                    }}
-                    loop controls >
-                        <source src={this.state.url} type="video/mp4" />
-                        {message}
-                    </video>
+                    {
+                        this.state.videoUrl ?
+                            <video
+                            className="drag-content" 
+                            onMouseDown={e => this.onMouseDown(e)}
+                            ref="dragContent"
+                            style={{
+                                left : this.state.x,
+                                top : this.state.y
+                            }}
+                            loop controls >
+                                <source src={this.state.videoUrl} type="video/mp4" />
+                                {message}
+                            </video>
+                        : this.state.picUrl ?
+                            <div
+                            ref="dragContent"
+                            onMouseDown={e => this.initResize(e)}
+                            style={{
+                            left : this.state.x,
+                            top : this.state.y
+                            }}
+                            className="drag-content"
+                            >
+                                <img 
+                                onMouseDown={e => this.onMouseDown(e)}
+                                alt=""
+                                src={this.state.picUrl}
+                                ref="content"
+                                />
+                            </div>
+                        :
+                        null
+                    }
+                    
                 </div>
                 <a href="/">Back</a>
             </div>
@@ -160,7 +206,8 @@ class Dashboard extends React.Component{
 }
 
 Dashboard.propTypes = {
-    contentUrl: PropTypes.string.isRequired
+    picUrl: PropTypes.string,
+    videoUrl: PropTypes.string
 }
 
-export default withRouter(Dashboard);
+export default Dashboard;

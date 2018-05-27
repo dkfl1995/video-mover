@@ -4,7 +4,6 @@ import {BrowserRouter} from 'react-router-dom';
 import {Route, Switch} from 'react-router';
 import './index.css';
 import Main from './Main';
-import Dashboard from './Dashboard';
 import registerServiceWorker from './registerServiceWorker';
 
 ReactDOM.render(
